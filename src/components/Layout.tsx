@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
   LayoutDashboard, 
@@ -7,8 +7,13 @@ import {
   Bot, 
   MessageSquare, 
   BarChart3,
-  Phone
+  Phone,
+  Settings,
+  LogOut
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "./ui/button";
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +30,14 @@ const navItems = [
 
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({ title: "Logout realizado com sucesso!" });
+    navigate("/auth");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,6 +75,28 @@ export const Layout = ({ children }: LayoutProps) => {
             );
           })}
         </nav>
+
+        <div className="absolute bottom-0 left-0 right-0 space-y-2 p-4 border-t border-border bg-card">
+          <Link
+            to="/settings"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-accent text-muted-foreground hover:text-foreground",
+              location.pathname === "/settings" && "bg-accent text-primary font-medium"
+            )}
+          >
+            <Settings className="h-5 w-5" />
+            <span>Configurações</span>
+          </Link>
+
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Sair</span>
+          </Button>
+        </div>
       </aside>
 
       {/* Main Content */}

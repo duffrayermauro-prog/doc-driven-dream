@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,16 +13,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-const mockLeads = [
-  { id: 1, name: "João Silva", phone: "+55 11 98765-4321", status: "Novo", source: "Import CSV", date: "2024-01-15" },
-  { id: 2, name: "Maria Santos", phone: "+55 21 97654-3210", status: "Contatado", source: "Campanha Q1", date: "2024-01-14" },
-  { id: 3, name: "Pedro Oliveira", phone: "+55 31 96543-2109", status: "Qualificado", source: "Import CSV", date: "2024-01-13" },
-  { id: 4, name: "Ana Costa", phone: "+55 41 95432-1098", status: "Novo", source: "Campanha Q1", date: "2024-01-12" },
-  { id: 5, name: "Carlos Pereira", phone: "+55 51 94321-0987", status: "Convertido", source: "Follow-up", date: "2024-01-11" },
-];
+import { LeadImportDialog } from "@/components/LeadImportDialog";
+import { useLeads } from "@/hooks/useLeads";
 
 const Leads = () => {
+  const [importOpen, setImportOpen] = useState(false);
+  const { leads, isLoading } = useLeads();
+
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">
@@ -32,7 +30,10 @@ const Leads = () => {
               Gerencie e importe seus leads
             </p>
           </div>
-          <Button className="gradient-primary text-white shadow-glow">
+          <Button 
+            onClick={() => setImportOpen(true)}
+            className="gradient-primary text-white shadow-glow"
+          >
             <Upload className="mr-2 h-4 w-4" />
             Importar CSV
           </Button>
@@ -65,32 +66,50 @@ const Leads = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockLeads.map((lead) => (
-                  <TableRow key={lead.id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium">{lead.name}</TableCell>
-                    <TableCell>{lead.phone}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          lead.status === "Convertido"
-                            ? "default"
-                            : lead.status === "Qualificado"
-                            ? "secondary"
-                            : "outline"
-                        }
-                      >
-                        {lead.status}
-                      </Badge>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      Carregando...
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{lead.source}</TableCell>
-                    <TableCell className="text-muted-foreground">{lead.date}</TableCell>
                   </TableRow>
-                ))}
+                ) : leads && leads.length > 0 ? (
+                  leads.map((lead) => (
+                    <TableRow key={lead.id} className="hover:bg-muted/50">
+                      <TableCell className="font-medium">{lead.nome || 'Sem nome'}</TableCell>
+                      <TableCell>{lead.numero_telefone}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            lead.status === "convertido"
+                              ? "default"
+                              : lead.status === "em_conversa"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {lead.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{lead.empresa || '-'}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      Nenhum lead cadastrado. Importe um CSV para começar!
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
         </Card>
       </div>
+
+      <LeadImportDialog open={importOpen} onOpenChange={setImportOpen} />
     </Layout>
   );
 };

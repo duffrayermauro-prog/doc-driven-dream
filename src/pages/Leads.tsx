@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Upload, Search, Filter } from "lucide-react";
+import { Upload, Search, Filter, UserPlus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { LeadImportDialog } from "@/components/LeadImportDialog";
 import { useLeads } from "@/hooks/useLeads";
+import { LoadingState } from "@/components/LoadingState";
+import { EmptyState } from "@/components/EmptyState";
+import { format } from "date-fns";
 
 const Leads = () => {
   const [importOpen, setImportOpen] = useState(false);
@@ -62,58 +65,54 @@ const Leads = () => {
             </Button>
           </div>
 
-          <div className="rounded-lg border border-border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Telefone</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Origem</TableHead>
-                  <TableHead>Data</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
+          {!leads || leads.length === 0 ? (
+            <EmptyState
+              icon={UserPlus}
+              title="Nenhum lead encontrado"
+              description="Comece importando leads via CSV ou adicionando manualmente."
+              actionLabel="Importar Leads"
+              onAction={() => setImportOpen(true)}
+            />
+          ) : (
+            <div className="rounded-lg border border-border">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      Carregando...
-                    </TableCell>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Telefone</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Data</TableHead>
                   </TableRow>
-                ) : leads && leads.length > 0 ? (
-                  leads.map((lead) => (
+                </TableHeader>
+                <TableBody>
+                  {leads.map((lead) => (
                     <TableRow key={lead.id} className="hover:bg-muted/50">
                       <TableCell className="font-medium">{lead.nome || 'Sem nome'}</TableCell>
                       <TableCell>{lead.numero_telefone}</TableCell>
+                      <TableCell>{lead.email || '-'}</TableCell>
                       <TableCell>
                         <Badge
                           variant={
-                            lead.status === "convertido"
-                              ? "default"
-                              : lead.status === "em_conversa"
-                              ? "secondary"
-                              : "outline"
+                            lead.status === "convertido" ? "default" :
+                            lead.status === "em_conversa" ? "secondary" :
+                            lead.status === "contatado" ? "outline" : "destructive"
                           }
                         >
-                          {lead.status}
+                          {lead.status === "convertido" ? "Convertido" :
+                           lead.status === "em_conversa" ? "Em Conversa" :
+                           lead.status === "contatado" ? "Contatado" : "Desqualificado"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{lead.empresa || '-'}</TableCell>
                       <TableCell className="text-muted-foreground">
-                        {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                        {format(new Date(lead.data_cadastro), 'dd/MM/yyyy')}
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                      Nenhum lead cadastrado. Importe um CSV para começar!
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </Card>
       </div>
 

@@ -1,73 +1,236 @@
-# Welcome to your Lovable project
+# 🤖 WhatsApp AI Automation Platform
 
-## Project info
+> **Automatize conversas WhatsApp em escala com Inteligência Artificial**
 
-**URL**: https://lovable.dev/projects/9a8660a2-1e0e-486c-9623-1f36c5e8a2e7
+Plataforma completa para prospecção, qualificação e engajamento de leads através do WhatsApp, utilizando agentes de IA personalizáveis que conduzem conversas naturais e inteligentes.
 
-## How can I edit this code?
+[![Tecnologias](https://img.shields.io/badge/React-18.3-blue)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-green)](https://supabase.com)
+[![Lovable AI](https://img.shields.io/badge/Lovable%20AI-Gemini%202.5-purple)](https://lovable.dev)
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## ✨ Funcionalidades
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9a8660a2-1e0e-486c-9623-1f36c5e8a2e7) and start prompting.
+### 🎯 Gestão de Leads
+- ✅ Importação em massa via CSV
+- ✅ Segmentação e filtros avançados
+- ✅ Histórico completo de interações
+- ✅ Status personalizáveis (Contatado, Em Conversa, Convertido)
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🤖 Agentes de IA Personalizáveis
+- ✅ Configure personalidade, tom e objetivos
+- ✅ Contexto e conhecimento base
+- ✅ Perguntas de qualificação customizadas
+- ✅ Suporte a múltiplos agentes simultâneos
 
-**Use your preferred IDE**
+### 📱 Gerenciamento WhatsApp
+- ✅ Múltiplos números conectados
+- ✅ Monitoramento de status e limites
+- ✅ Rastreamento de mensagens enviadas
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎯 Campanhas Inteligentes
+- ✅ Criação de campanhas segmentadas
+- ✅ Controle de execução (play/pause)
+- ✅ Métricas em tempo real
+- ✅ Tipos: Prospecção, Engajamento, Reativação
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 📊 Analytics e Relatórios
+- ✅ Dashboard com métricas principais
+- ✅ Histórico de conversas
+- ✅ Taxa de conversão
+- ✅ Performance por agente
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+## 🚀 Quick Start
+
+### Pré-requisitos
+- Node.js 18+ 
+- Conta Lovable (para backend Supabase)
+
+### Instalação
+
+```bash
+# Clone o repositório
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Instale as dependências
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Execute em desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Acesse: `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Primeiro Acesso
+1. Registre-se em `/auth`
+2. O primeiro usuário se torna **admin** automaticamente
+3. Importe seus leads via CSV
+4. Crie seu primeiro agente de IA
+5. Lance sua primeira campanha! 🎉
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🏗️ Arquitetura
 
-## What technologies are used for this project?
+```mermaid
+graph LR
+    A[React Frontend] --> B[Supabase Backend]
+    B --> C[PostgreSQL]
+    B --> D[Edge Functions]
+    D --> E[Lovable AI Gateway]
+    E --> F[Google Gemini 2.5]
+    B --> G[WhatsApp API]
+```
 
-This project is built with:
+**Stack Principal**:
+- **Frontend**: React 18 + TypeScript + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime, Edge Functions)
+- **IA**: Lovable AI Gateway (Gemini 2.5 Flash)
+- **Deploy**: Lovable Cloud (automático)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📖 Documentação
 
-Simply open [Lovable](https://lovable.dev/projects/9a8660a2-1e0e-486c-9623-1f36c5e8a2e7) and click on Share -> Publish.
+- 📚 [Documentação Técnica Completa](./DOCUMENTATION.md)
+- 🔄 [Changelog](./CHANGELOG.md)
+- 🌐 [Lovable Project](https://lovable.dev/projects/9a8660a2-1e0e-486c-9623-1f36c5e8a2e7)
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 🔧 Tecnologias
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+<table>
+<tr>
+<td><strong>Frontend</strong></td>
+<td>
+React 18.3, TypeScript, Vite, Tailwind CSS, shadcn/ui, React Query (TanStack), React Router DOM, Zod
+</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td>
+Supabase (PostgreSQL + RLS), Edge Functions (Deno), Lovable AI Gateway
+</td>
+</tr>
+<tr>
+<td><strong>Inteligência Artificial</strong></td>
+<td>
+Google Gemini 2.5 Flash (via Lovable AI), OpenAI GPT-5 (opcional)
+</td>
+</tr>
+<tr>
+<td><strong>Deploy</strong></td>
+<td>
+Lovable Cloud (automático), Vercel/Netlify (alternativas)
+</td>
+</tr>
+</table>
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 🛠️ Comandos Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev          # Inicia servidor de desenvolvimento
+
+# Build
+npm run build        # Build para produção
+npm run preview      # Preview do build
+
+# Qualidade de Código
+npm run lint         # Executa ESLint
+```
+
+---
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Por favor:
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add: amazing feature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+**Padrão de Commits**: [Conventional Commits](https://www.conventionalcommits.org/)
+
+---
+
+## 📝 Roadmap
+
+- [ ] **Q1 2025**: Integração real com WhatsApp Business API
+- [ ] **Q1 2025**: Templates de mensagens personalizados
+- [ ] **Q2 2025**: Dashboard avançado com mais métricas
+- [ ] **Q2 2025**: A/B Testing de agentes IA
+- [ ] **Q3 2025**: App mobile (React Native)
+- [ ] **Q3 2025**: Integrações com CRMs (Salesforce, HubSpot)
+
+---
+
+## 🔒 Segurança
+
+- ✅ Row Level Security (RLS) em todas as tabelas
+- ✅ JWT tokens com auto-refresh
+- ✅ Secrets criptografados
+- ✅ HTTPS obrigatório
+- ✅ Rate limiting em Edge Functions
+
+Reporte vulnerabilidades: security@<your-domain>.com
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+---
+
+## 🌟 Deploy
+
+### Lovable Cloud (Recomendado)
+
+1. Acesse seu [Projeto Lovable](https://lovable.dev/projects/9a8660a2-1e0e-486c-9623-1f36c5e8a2e7)
+2. Clique em **Publish** no canto superior direito
+3. Seu app estará disponível em: `<your-subdomain>.lovable.app`
+
+### Domínio Customizado
+
+Para conectar um domínio próprio:
+1. Vá em **Project → Settings → Domains**
+2. Clique em **Connect Domain**
+3. Siga as instruções de configuração DNS
+
+Leia mais: [Configurando domínio customizado](https://docs.lovable.dev/features/custom-domain)
+
+---
+
+## 🆘 Suporte
+
+- 📚 [Documentação Técnica](./DOCUMENTATION.md)
+- 💬 [Lovable Discord](https://discord.com/channels/1119885301872070706)
+- 📖 [Lovable Docs](https://docs.lovable.dev)
+- 📧 Email: support@<your-domain>.com
+
+---
+
+## 👥 Equipe
+
+Desenvolvido com ❤️ pela equipe de desenvolvimento.
+
+---
+
+## 🌟 Dê uma Star!
+
+Se este projeto te ajudou, considere dar uma ⭐ no GitHub!
+
+---
+
+**Última atualização**: 2025-10-18 | **Versão**: 1.0.0

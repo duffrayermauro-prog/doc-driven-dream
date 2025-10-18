@@ -1,37 +1,27 @@
 import { Layout } from "@/components/Layout";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Phone, Plus, CheckCircle2, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
-const mockNumbers = [
-  {
-    id: 1,
-    number: "+55 11 98765-4321",
-    name: "Vendas Principal",
-    status: "Conectado",
-    messages: 1247,
-    lastActivity: "2 min atrás",
-  },
-  {
-    id: 2,
-    number: "+55 21 97654-3210",
-    name: "Suporte Técnico",
-    status: "Conectado",
-    messages: 523,
-    lastActivity: "15 min atrás",
-  },
-  {
-    id: 3,
-    number: "+55 31 96543-2109",
-    name: "Follow-up",
-    status: "Desconectado",
-    messages: 892,
-    lastActivity: "2 horas atrás",
-  },
-];
+import { MessageSquare, Plus, CheckCircle2, XCircle } from "lucide-react";
+import { useWhatsAppNumbers } from "@/hooks/useWhatsAppNumbers";
+import { LoadingState } from "@/components/LoadingState";
+import { EmptyState } from "@/components/EmptyState";
+import { useState } from "react";
+import { WhatsAppConnectDialog } from "@/components/WhatsAppConnectDialog";
+import { format } from "date-fns";
 
 const WhatsApp = () => {
+  const { numbers, isLoading } = useWhatsAppNumbers();
+  const [showConnectDialog, setShowConnectDialog] = useState(false);
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingState />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">
@@ -42,58 +32,73 @@ const WhatsApp = () => {
               Gerencie seus números conectados
             </p>
           </div>
-          <Button className="gradient-primary text-white shadow-glow">
+          <Button onClick={() => setShowConnectDialog(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Conectar Número
           </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {mockNumbers.map((phone) => (
-            <Card key={phone.id} className="p-6 shadow-card hover:shadow-elevated transition-all">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg gradient-primary">
-                  <Phone className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex items-center gap-2">
-                  {phone.status === "Conectado" ? (
-                    <CheckCircle2 className="h-5 w-5 text-primary" />
+        {!numbers || numbers.length === 0 ? (
+          <EmptyState
+            icon={MessageSquare}
+            title="Nenhum número conectado"
+            description="Conecte um número WhatsApp Business para começar a enviar mensagens automatizadas."
+            actionLabel="Conectar Primeiro Número"
+            onAction={() => setShowConnectDialog(true)}
+          />
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {numbers.map((number) => (
+              <Card key={number.id} className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <MessageSquare className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{number.nome_exibicao || "Sem nome"}</h3>
+                      <p className="text-sm text-muted-foreground">{number.numero}</p>
+                    </div>
+                  </div>
+                  {number.status === "conectado" ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
                   ) : (
-                    <XCircle className="h-5 w-5 text-destructive" />
+                    <XCircle className="h-5 w-5 text-red-500" />
                   )}
-                  <Badge
-                    variant={phone.status === "Conectado" ? "default" : "destructive"}
-                  >
-                    {phone.status}
-                  </Badge>
                 </div>
-              </div>
-              
-              <h3 className="text-lg font-semibold text-foreground mb-1">
-                {phone.name}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {phone.number}
-              </p>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Mensagens enviadas</span>
-                  <span className="font-medium text-foreground">{phone.messages}</span>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Status</span>
+                    <Badge variant={number.status === "conectado" ? "default" : "secondary"}>
+                      {number.status === "conectado" ? "Conectado" : "Desconectado"}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Mensagens (mês)</span>
+                    <span className="font-medium">{number.mensagens_enviadas_mes || 0}</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Última conexão</span>
+                    <span className="font-medium">
+                      {number.ultima_conexao 
+                        ? format(new Date(number.ultima_conexao), 'dd/MM/yyyy')
+                        : 'Nunca'}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Última atividade</span>
-                  <span className="font-medium text-foreground">{phone.lastActivity}</span>
-                </div>
-              </div>
-              
-              <Button variant="outline" className="w-full">
-                Ver Detalhes
-              </Button>
-            </Card>
-          ))}
-        </div>
+                
+                <Button variant="outline" className="w-full mt-4">
+                  Ver Detalhes
+                </Button>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
+      <WhatsAppConnectDialog open={showConnectDialog} onOpenChange={setShowConnectDialog} />
     </Layout>
   );
 };

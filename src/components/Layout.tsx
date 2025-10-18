@@ -20,7 +20,7 @@ interface LayoutProps {
 }
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Users, label: "Leads", path: "/leads" },
   { icon: Bot, label: "Agentes IA", path: "/agents" },
   { icon: Phone, label: "Números WhatsApp", path: "/whatsapp" },

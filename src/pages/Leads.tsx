@@ -20,6 +20,14 @@ const Leads = () => {
   const [importOpen, setImportOpen] = useState(false);
   const { leads, isLoading } = useLeads();
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <LoadingState />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-6 animate-fade-in">

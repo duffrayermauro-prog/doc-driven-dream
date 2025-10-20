@@ -8,11 +8,17 @@ import { LoadingState } from "@/components/LoadingState";
 import { EmptyState } from "@/components/EmptyState";
 import { useState } from "react";
 import { WhatsAppConnectDialog } from "@/components/WhatsAppConnectDialog";
+import { WhatsAppDetailsDialog } from "@/components/WhatsAppDetailsDialog";
 import { format } from "date-fns";
 
 const WhatsApp = () => {
   const { numbers, isLoading } = useWhatsAppNumbers();
   const [showConnectDialog, setShowConnectDialog] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<any>(null);
+
+  const handleViewDetails = (number: any) => {
+    setSelectedNumber(number);
+  };
 
   if (isLoading) {
     return (
@@ -90,7 +96,11 @@ const WhatsApp = () => {
                   </div>
                 </div>
                 
-                <Button variant="outline" className="w-full mt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => handleViewDetails(number)}
+                >
                   Ver Detalhes
                 </Button>
               </Card>
@@ -99,6 +109,11 @@ const WhatsApp = () => {
         )}
       </div>
       <WhatsAppConnectDialog open={showConnectDialog} onOpenChange={setShowConnectDialog} />
+      <WhatsAppDetailsDialog 
+        open={!!selectedNumber} 
+        onOpenChange={(open) => !open && setSelectedNumber(null)}
+        number={selectedNumber}
+      />
     </Layout>
   );
 };

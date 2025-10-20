@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,36 +10,54 @@ import { useAgents } from "@/hooks/useAgents";
 interface AgentFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  agent?: any;
 }
 
-export const AgentFormDialog = ({ open, onOpenChange }: AgentFormDialogProps) => {
-  const { createAgent } = useAgents();
+export const AgentFormDialog = ({ open, onOpenChange, agent }: AgentFormDialogProps) => {
+  const { createAgent, updateAgent } = useAgents();
   const [formData, setFormData] = useState({
-    nome: "",
-    objetivo_campanha: "",
-    conhecimento_contexto: "",
-    identidade_prompt: "",
-    tom_comunicacao: "amigavel" as const
+    nome: agent?.nome || "",
+    objetivo_campanha: agent?.objetivo_campanha || "",
+    conhecimento_contexto: agent?.conhecimento_contexto || "",
+    identidade_prompt: agent?.identidade_prompt || "",
+    tom_comunicacao: agent?.tom_comunicacao || "amigavel"
   });
+
+  useEffect(() => {
+    if (agent) {
+      setFormData({
+        nome: agent.nome || "",
+        objetivo_campanha: agent.objetivo_campanha || "",
+        conhecimento_contexto: agent.conhecimento_contexto || "",
+        identidade_prompt: agent.identidade_prompt || "",
+        tom_comunicacao: agent.tom_comunicacao || "amigavel"
+      });
+    } else {
+      setFormData({
+        nome: "",
+        objetivo_campanha: "",
+        conhecimento_contexto: "",
+        identidade_prompt: "",
+        tom_comunicacao: "amigavel"
+      });
+    }
+  }, [agent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createAgent(formData);
+    if (agent?.id) {
+      updateAgent({ id: agent.id, updates: formData });
+    } else {
+      createAgent(formData);
+    }
     onOpenChange(false);
-    setFormData({
-      nome: "",
-      objetivo_campanha: "",
-      conhecimento_contexto: "",
-      identidade_prompt: "",
-      tom_comunicacao: "amigavel"
-    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Novo Agente de IA</DialogTitle>
+          <DialogTitle>{agent ? "Editar Agente de IA" : "Criar Novo Agente de IA"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -108,7 +126,7 @@ export const AgentFormDialog = ({ open, onOpenChange }: AgentFormDialogProps) =>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Criar Agente</Button>
+            <Button type="submit">{agent ? "Salvar Alterações" : "Criar Agente"}</Button>
           </div>
         </form>
       </DialogContent>

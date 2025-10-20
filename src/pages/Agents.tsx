@@ -12,6 +12,17 @@ import { AgentFormDialog } from "@/components/AgentFormDialog";
 const Agents = () => {
   const { agents, isLoading } = useAgents();
   const [showAgentDialog, setShowAgentDialog] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
+
+  const handleEditAgent = (agent: any) => {
+    setSelectedAgent(agent);
+    setShowAgentDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setShowAgentDialog(false);
+    setSelectedAgent(null);
+  };
 
   if (isLoading) {
     return (
@@ -67,7 +78,11 @@ const Agents = () => {
                   {agent.objetivo_campanha || agent.identidade_prompt || "Sem descrição"}
                 </p>
                 
-                <Button variant="outline" className="w-full mt-4">
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4"
+                  onClick={() => handleEditAgent(agent)}
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   Configurar
                 </Button>
@@ -76,7 +91,11 @@ const Agents = () => {
           </div>
         )}
       </div>
-      <AgentFormDialog open={showAgentDialog} onOpenChange={setShowAgentDialog} />
+      <AgentFormDialog 
+        open={showAgentDialog} 
+        onOpenChange={handleCloseDialog}
+        agent={selectedAgent}
+      />
     </Layout>
   );
 };

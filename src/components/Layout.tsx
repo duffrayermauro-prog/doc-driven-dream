@@ -9,7 +9,8 @@ import {
   BarChart3,
   Phone,
   Settings,
-  LogOut
+  LogOut,
+  Target
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +25,8 @@ const navItems = [
   { icon: Users, label: "Leads", path: "/leads" },
   { icon: Bot, label: "Agentes IA", path: "/agents" },
   { icon: Phone, label: "Números WhatsApp", path: "/whatsapp" },
-  { icon: MessageSquare, label: "Campanhas", path: "/campaigns" },
+  { icon: Target, label: "Campanhas", path: "/campaigns" },
+  { icon: MessageSquare, label: "Conversas", path: "/conversations" },
   { icon: BarChart3, label: "Relatórios", path: "/reports" },
 ];
 

@@ -1,20 +1,71 @@
 import { Layout } from "@/components/Layout";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Plus, Play, Pause, BarChart3 } from "lucide-react";
+import { Plus, BarChart3 } from "lucide-react";
 import { useCampaigns } from "@/hooks/useCampaigns";
 import { LoadingState } from "@/components/LoadingState";
 import { EmptyState } from "@/components/EmptyState";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CampaignFormDialog } from "@/components/CampaignFormDialog";
 import { useNavigate } from "react-router-dom";
+import { CampaignTable } from "@/components/CampaignTable";
+import { CampaignFilters } from "@/components/CampaignFilters";
+import { CampaignBulkActions } from "@/components/CampaignBulkActions";
 
 const Campaigns = () => {
-  const { campaigns, isLoading, startCampaign, pauseCampaign } = useCampaigns();
+  const { 
+    campaigns, 
+    isLoading, 
+    startCampaign, 
+    pauseCampaign,
+    duplicateCampaign,
+    archiveCampaign,
+    bulkArchiveCampaigns,
+    bulkDeleteCampaigns
+  } = useCampaigns();
   const [showCampaignDialog, setShowCampaignDialog] = useState(false);
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const navigate = useNavigate();
+
+  // Filter campaigns based on search and filters
+  const filteredCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+    
+    return campaigns.filter((campaign: any) => {
+      const matchesSearch = campaign.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          campaign.agente_nome?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || campaign.status === statusFilter;
+      const matchesType = typeFilter === "all" || campaign.tipo === typeFilter;
+      
+      return matchesSearch && matchesStatus && matchesType;
+    });
+  }, [campaigns, searchTerm, statusFilter, typeFilter]);
+
+  const handleSelectCampaign = (id: string) => {
+    setSelectedCampaigns(prev => 
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      setSelectedCampaigns(filteredCampaigns.map((c: any) => c.id));
+    } else {
+      setSelectedCampaigns([]);
+    }
+  };
+
+  const handleBulkArchive = () => {
+    bulkArchiveCampaigns(selectedCampaigns);
+    setSelectedCampaigns([]);
+  };
+
+  const handleBulkDelete = () => {
+    bulkDeleteCampaigns(selectedCampaigns);
+    setSelectedCampaigns([]);
+  };
 
   if (isLoading) {
     return (
@@ -49,87 +100,38 @@ const Campaigns = () => {
             onAction={() => setShowCampaignDialog(true)}
           />
         ) : (
-          <div className="grid gap-6">
-            {campaigns.map((campaign: any) => {
-              const totalLeads = campaign.leads_count || 0;
-              const totalSent = campaign.numbers_sum || 0;
-              const progress = totalLeads > 0 ? Math.round((totalSent / totalLeads) * 100) : 0;
+          <div className="space-y-4">
+            <CampaignFilters
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              typeFilter={typeFilter}
+              onTypeFilterChange={setTypeFilter}
+            />
+            
+            <CampaignBulkActions
+              selectedCount={selectedCampaigns.length}
+              onArchive={handleBulkArchive}
+              onDelete={handleBulkDelete}
+              onClearSelection={() => setSelectedCampaigns([])}
+            />
 
-              return (
-                <Card key={campaign.id} className="p-6">
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <h3 className="text-xl font-semibold mb-2">{campaign.nome}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Agente: {campaign.agente_nome || 'Não atribuído'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={
-                        campaign.status === "em_execucao" ? "default" :
-                        campaign.status === "pausada" ? "secondary" : "outline"
-                      }>
-                        {campaign.status === "em_execucao" ? "Em execução" :
-                         campaign.status === "pausada" ? "Pausada" : "Rascunho"}
-                      </Badge>
-                      {campaign.status === "em_execucao" ? (
-                        <Button 
-                          size="icon" 
-                          variant="outline"
-                          onClick={() => pauseCampaign(campaign.id)}
-                        >
-                          <Pause className="h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <Button 
-                          size="icon" 
-                          variant="outline"
-                          onClick={() => startCampaign(campaign.id)}
-                        >
-                          <Play className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Leads</p>
-                      <p className="text-2xl font-bold">{totalLeads}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Enviadas</p>
-                      <p className="text-2xl font-bold">{totalSent}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Respostas</p>
-                      <p className="text-2xl font-bold">{campaign.metricas?.respostas || 0}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Conversões</p>
-                      <p className="text-2xl font-bold">{campaign.metricas?.conversoes || 0}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Progresso</span>
-                      <span className="font-medium">{progress}%</span>
-                    </div>
-                    <Progress value={progress} />
-                  </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => navigate(`/reports?campaign=${campaign.id}`)}
-                  >
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    Ver Relatório
-                  </Button>
-                </Card>
-              );
-            })}
+            <CampaignTable
+              campaigns={filteredCampaigns}
+              selectedCampaigns={selectedCampaigns}
+              onSelectCampaign={handleSelectCampaign}
+              onSelectAll={handleSelectAll}
+              onStartCampaign={startCampaign}
+              onPauseCampaign={pauseCampaign}
+              onEditCampaign={(id) => {
+                // TODO: Implement edit functionality
+                console.log("Edit campaign:", id);
+              }}
+              onDuplicateCampaign={duplicateCampaign}
+              onArchiveCampaign={archiveCampaign}
+              onViewDetails={(id) => navigate(`/reports?campaign=${id}`)}
+            />
           </div>
         )}
       </div>

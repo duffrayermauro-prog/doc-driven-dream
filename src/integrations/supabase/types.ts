@@ -128,6 +128,7 @@ export type Database = {
       campanhas: {
         Row: {
           agente_ia_id: string | null
+          archived_at: string | null
           configuracao_agendamento: Json | null
           created_at: string | null
           data_fim: string | null
@@ -137,12 +138,14 @@ export type Database = {
           metricas: Json | null
           nome: string
           status: Database["public"]["Enums"]["campaign_status"] | null
+          tags: string[] | null
           tipo: Database["public"]["Enums"]["campaign_type"] | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           agente_ia_id?: string | null
+          archived_at?: string | null
           configuracao_agendamento?: Json | null
           created_at?: string | null
           data_fim?: string | null
@@ -152,12 +155,14 @@ export type Database = {
           metricas?: Json | null
           nome: string
           status?: Database["public"]["Enums"]["campaign_status"] | null
+          tags?: string[] | null
           tipo?: Database["public"]["Enums"]["campaign_type"] | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           agente_ia_id?: string | null
+          archived_at?: string | null
           configuracao_agendamento?: Json | null
           created_at?: string | null
           data_fim?: string | null
@@ -167,6 +172,7 @@ export type Database = {
           metricas?: Json | null
           nome?: string
           status?: Database["public"]["Enums"]["campaign_status"] | null
+          tags?: string[] | null
           tipo?: Database["public"]["Enums"]["campaign_type"] | null
           updated_at?: string | null
           user_id?: string
